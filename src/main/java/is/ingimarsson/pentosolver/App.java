@@ -19,6 +19,8 @@ public class App {
     JButton openSolutionButton;
     JButton generateRandomButton;
     JButton resizeButton;
+    JButton nextSolutionButton;
+    JButton playButton;
 
     JTextField heightField;
     JTextField widthField;
@@ -130,10 +132,11 @@ public class App {
         mainFrame.setSize(800,650);
         mainFrame.setResizable(false);
 
-        solutionFrame.setSize(800,600);
+        solutionFrame.setSize(800,620);
         solutionFrame.setResizable(false);
 
         mainFrame.setLayout(new MigLayout("", "20[]20", "20[500]20[]"));
+        solutionFrame.setLayout(new MigLayout("", "20[]20", "20[500]20[]"));
 
         openSolutionButton = new JButton("Solve");
         generateRandomButton = new JButton("Generate");
@@ -159,11 +162,29 @@ public class App {
             }
         );
 
+        generateRandomButton.addActionListener(
+            new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    mainPento.generateRandom();
+                }
+            }
+        );
 
         openSolutionButton.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    solutionFrame.setVisible(true);
+                    int n = 0;
+                    for( String[] b: Pento.makeSolutions(mainPento.getBoard()) ) {
+                        if (n==0) solutionPento.setBoard(b);
+                        n++;
+                        break;
+                    }
+                    if (n==0) {
+                        JOptionPane.showMessageDialog(mainFrame,"No solutions found");  
+                    }
+                    else {
+                        solutionFrame.setVisible(true);
+                    }
                 }
             }
         );
@@ -179,6 +200,15 @@ public class App {
 
         mainFrame.setJMenuBar(createMenuBar());
 
+        // Setjum upp lausnarglugga
+
+        nextSolutionButton = new JButton("Next Solution");
+
+        solutionPento = new PentoComponent(700,500);
+
+        solutionFrame.add(solutionPento, "cell 0 0 7 1, w 700!, h 500!, gapleft 30");
+        solutionFrame.add(nextSolutionButton, "cell 0 1, gapleft 30");
+ 
         mainFrame.setVisible(true);
     }
 

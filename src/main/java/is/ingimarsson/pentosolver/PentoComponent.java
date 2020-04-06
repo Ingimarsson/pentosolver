@@ -42,8 +42,10 @@ public class PentoComponent extends JComponent {
     //         einhvern af 12 mismunandi fimmferninguum
     // Eftir:  PentoComponent c birtir nýja borðið b.
     public void setBoard(String[] b) {
-        this.firePropertyChange("board", this.board, b);
+        //this.firePropertyChange("board", this.board, b);
+
         this.board = b;
+        this.repaint();
     }
 
     // Notkun: String[] b = c.getBoard();
@@ -71,6 +73,27 @@ public class PentoComponent extends JComponent {
         for (int i=0; i<b.length; i++) {
             System.out.println(b[i]);
         }
+    }
+
+    public void generateRandom() {
+        String[] b = new String[this.board.length];
+        char[] line = new char[this.board[0].length()];
+
+        for (int i=0; i<b.length; i++) {
+            for (int j=0; j<line.length; j++) {
+                if (Math.random() < 0.25) {
+                    line[j] = '*';
+                }
+                else {
+                    line[j] = ' ';
+                }
+            }
+
+            b[i] = String.valueOf(line);
+        }
+
+        this.setBoard(b);
+        this.repaint();
     }
 
     @Override

@@ -1,3 +1,5 @@
+package is.ingimarsson.pentosolver;
+
 // Hvert tilvik af Pento stendur fyrir fimmferning (pentomino),
 // þ.e. fimm samloðandi ferninga, til dæmis
 //
