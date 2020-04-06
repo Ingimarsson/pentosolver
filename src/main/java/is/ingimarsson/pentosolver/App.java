@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import java.io.*;
+import java.nio.file.Files;
+
 import org.apache.commons.lang3.StringUtils;
 import net.miginfocom.swing.MigLayout;
 
@@ -23,6 +26,39 @@ public class App {
     PentoComponent mainPento;
     PentoComponent solutionPento;
 
+    JFileChooser jfc;
+
+    File file;
+
+    public void handleOpen() {
+        jfc.showOpenDialog(null);
+
+        file = jfc.getSelectedFile();
+
+        try {
+            String content = new String(Files.readAllBytes(file.toPath()));
+
+            mainPento.setBoard(content.split(System.getProperty("line.separator")));
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void handleExport() {
+        jfc.showSaveDialog(null);
+
+        file = jfc.getSelectedFile();
+ 
+        try {
+            String content = String.join(System.getProperty("line.separator"), mainPento.getBoard());
+            Files.write(file.toPath(), content.getBytes());
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+ 
     public JMenuBar createMenuBar() {
         JMenuBar menuBar;
         JMenu menu;
@@ -32,13 +68,20 @@ public class App {
 
         menu = new JMenu("File");
 
-        menuItem = new JMenuItem("New");
-        menu.add(menuItem);
-
         menuItem = new JMenuItem("Open");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                handleOpen();
+            }
+        });
         menu.add(menuItem);
 
-        menuItem = new JMenuItem("Save");
+        menuItem = new JMenuItem("Export");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                handleExport();
+            }
+        });
         menu.add(menuItem);
 
         menu.addSeparator();
@@ -61,6 +104,7 @@ public class App {
 
     public App() {
         board = new String[]{"   F", "  X ", "    ", "*   "};
+        jfc = new JFileChooser();
 
         mainFrame = new JFrame("Pento Editor");
         solutionFrame = new JFrame("Pento Solver");
