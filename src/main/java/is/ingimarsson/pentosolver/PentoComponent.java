@@ -7,6 +7,11 @@ import java.beans.*;
 import java.util.Random;
 
 public class PentoComponent extends JComponent {
+    // Fastayrðing gagna
+    //
+    // Núverandi fimmferningur er geymdur í board breytunni,
+    // á því formi sem Pento klasinn tilgreinir. Stærð borðsins
+    // í reitum er geymd sem heiltölur í height og width.
     String[] board;
 
     int height = 0;
@@ -55,10 +60,25 @@ public class PentoComponent extends JComponent {
         return this.board;
     }
 
+    // Notkun: c.emptyBoard()
+    // Fyrir:  c er PentoComponent
+    // Eftir:  Búið er að núllstilla borðið í c með einum tómum reit.
+    public void emptyBoard() {
+        this.setBoard(new String[]{" "});
+    }
+
+    // Notkun: char block = c.getBlock(int x, int y)
+    // Fyrir:  c er PentoComponent, x og y eru jákvæðar heiltölur.
+    // Eftir:  block er sá bókstafur sem er í reit (x,y) á borðinu í c.
     public char getBlock(int x, int y) {
         return this.board[y].charAt(x);
     }
 
+    // Notkun: c.setBlock(int x, int y, char block)
+    // Fyrir:  c er PentoComponent, x og y eru jákvæðar heiltölur og 
+    //         block er bókstafur (char).
+    // Eftir:  PentoComponent c birtir nýtt borð með bókstafinn block
+    //         í reit (x,y)
     public void setBlock(int x, int y, char block) {
         String[] b = this.getBoard();
 
@@ -69,12 +89,19 @@ public class PentoComponent extends JComponent {
 
         this.setBoard(b);
         this.repaint();
-
+        
+        /*
         for (int i=0; i<b.length; i++) {
             System.out.println(b[i]);
         }
+        */
     }
 
+    // Notkun: c.generateRandom()
+    // Fyrir:  c er PentoComponent.
+    // Eftir:  PentoComponent c birtir nýtt borð af sömu stærð og áður
+    //         en með handahófskennt auða og fyllta reiti þar sem 
+    //         líkurnar á að reitur sé fylltur eru 25%.
     public void generateRandom() {
         String[] b = new String[this.board.length];
         char[] line = new char[this.board[0].length()];
@@ -94,6 +121,22 @@ public class PentoComponent extends JComponent {
 
         this.setBoard(b);
         this.repaint();
+    }
+
+    // Notkun: int empty = c.countEmpty()
+    // Fyrir:  c er PentoComponent
+    // Eftir:  empty er jákvæð heiltala sem segir hve margir reitir í
+    //         borðinu í c eru auðir, þ.e. innihalda bil.
+    public int countEmpty() {
+        int n = 0;
+
+        for (String line : this.board) {
+            for (char c : line.toCharArray()) {
+                if (c==' ') n++;
+            }
+        }
+
+        return n;
     }
 
     @Override

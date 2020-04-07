@@ -3,6 +3,8 @@ package is.ingimarsson.pentosolver;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.net.URL;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -11,27 +13,42 @@ import org.apache.commons.lang3.StringUtils;
 import net.miginfocom.swing.MigLayout;
 
 public class App {
-    String[] board;
+    // Fastayrðing gagna
+    //
+    // solutions er listi af þeim lausnum sem finnast þegar
+    // ýtt er á solve takkann. solutionNumber er númer þeirrar
+    // lausnar í listanum sem er á skjánum á þeim tíma. file er
+    // tilvik af þeirri skrá sem verið er að lesa eða skrifa í,
+    // eða null ef engin skrá er tilgreind. Tvö tilvik af
+    // PentoComponent eru tilgreind, mainPento er borðið sem 
+    // birtist á editor skjánum og inniheldur aðeins '*' eða ' '.
+    // solutionPento birtist þegar ýtt er á solve og sýnir þá
+    // lausn úr solutions listanum sem solutionNumber tilgreinir.
+    // Að auki eru tilvik af ýmsum swing components tilgreind hér.
+
+    ArrayList<String[]> solutions;
+    int solutionNumber;
+
+    File file;
+
+    PentoComponent mainPento;
+    PentoComponent solutionPento;
 
     JFrame mainFrame;
     JFrame solutionFrame;
-
     JButton openSolutionButton;
     JButton generateRandomButton;
     JButton resizeButton;
     JButton nextSolutionButton;
     JButton playButton;
-
     JTextField heightField;
     JTextField widthField;
-
-    PentoComponent mainPento;
-    PentoComponent solutionPento;
-
+    JLabel solutionLabel;
     JFileChooser jfc;
 
-    File file;
-
+    // Notkun: a.handleOpen()
+    // Fyrir:  a er tilvik af App
+    // Eftir:  Notandi velur skrá og hún er lesin inn í mainPento
     public void handleOpen() {
         jfc.showOpenDialog(null);
 
@@ -47,6 +64,9 @@ public class App {
         }
     }
 
+    // Notkun: a.handleExport()
+    // Fyrir:  a er tilvik af App
+    // Eftir:  Notandi velur skrá og borðið í mainPento er skrifað í hana
     public void handleExport() {
         jfc.showSaveDialog(null);
 
@@ -60,7 +80,10 @@ public class App {
             e.printStackTrace();
         }
     }
- 
+
+    // Notkun: a.createMenuBar()
+    // Fyrir:  a er tilvik af App
+    // Eftir:  mainFrame glugginn birtir menu bar með skráaraðgerðum
     public JMenuBar createMenuBar() {
         JMenuBar menuBar;
         JMenu menu;
@@ -89,6 +112,15 @@ public class App {
         menu.addSeparator();
 
         menuItem = new JMenuItem("Help");
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URL("https://google.com").toURI());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
         menu.add(menuItem);
 
         menuItem = new JMenuItem("Exit");
@@ -104,8 +136,11 @@ public class App {
         return menuBar;
     }
 
+    // Notkun: a = new App()
+    // Fyrir:  Ekkert.
+    // Eftir:  a er tilvik af App með uppsettu viðmóti.
     public App() {
-        board = new String[]{"   F", "  X ", "    ", "*   "};
+        String[] board = new String[]{"        ", "        ", "        ", "   **   ", "   **   ", "        ", "        ", "        "};
         jfc = new JFileChooser();
 
         mainFrame = new JFrame("Pento Editor");
@@ -121,8 +156,10 @@ public class App {
                 int x = e.getX()*mainPento.getBoard()[0].length()/700;
                 int y = e.getY()*mainPento.getBoard().length/500;
 
+                /*
                 System.out.println(x);
                 System.out.println(y);
+                */
 
                 mainPento.setBlock(x,y, mainPento.getBlock(x,y) == '*' ? ' ' : '*');
                 mainPento.setBoard(mainPento.getBoard());
@@ -173,16 +210,29 @@ public class App {
         openSolutionButton.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    int n = 0;
+                    int empty = mainPento.countEmpty();
+
+                    if (empty != 60) {
+                        JOptionPane.showMessageDialog(mainFrame, "Board needs to have exactly 60 empty blocks. Current board has "+Integer.toString(empty)+".");
+                        return;
+                    }
+
+                    solutions = new ArrayList<String[]>();
+                    solutionNumber = 0;
+
+                    int n=0;
                     for( String[] b: Pento.makeSolutions(mainPento.getBoard()) ) {
-                        if (n==0) solutionPento.setBoard(b);
+                        if (n==100) break;
+                        solutions.add(b);
                         n++;
-                        break;
                     }
-                    if (n==0) {
-                        JOptionPane.showMessageDialog(mainFrame,"No solutions found");  
-                    }
+
+                    if (solutions.size()==0) {
+                        JOptionPane.showMessageDialog(mainFrame, "No solutions found");  
+                    } 
                     else {
+                        solutionLabel.setText("Solution 1 / "+Integer.toString(solutions.size()));
+                        solutionPento.setBoard(solutions.get(0));
                         solutionFrame.setVisible(true);
                     }
                 }
@@ -190,24 +240,37 @@ public class App {
         );
 
         mainFrame.add(mainPento, "cell 0 0 7 1, w 700!, h 500!, gapleft 30");
-        mainFrame.add(new JLabel("Height"), "cell 0 1, gapleft 110");
+        mainFrame.add(new JLabel("Height"), "cell 0 1, gapleft 120");
         mainFrame.add(heightField, "cell 1 1");
         mainFrame.add(new JLabel("Width"), "cell 2 1");
         mainFrame.add(widthField, "cell 3 1");
         mainFrame.add(resizeButton, "cell 4 1");
-        mainFrame.add(openSolutionButton, "cell 5 1");
-        mainFrame.add(generateRandomButton, "cell 6 1");
+        mainFrame.add(generateRandomButton, "cell 5 1");
+        mainFrame.add(openSolutionButton, "cell 6 1");
 
         mainFrame.setJMenuBar(createMenuBar());
 
         // Setjum upp lausnarglugga
-
         nextSolutionButton = new JButton("Next Solution");
 
+        nextSolutionButton.addActionListener(
+            new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    solutionNumber = (solutionNumber+1) % 100;
+                    solutionPento.setBoard(solutions.get(solutionNumber));
+                    solutionLabel.setText("Solution "+Integer.toString(solutionNumber+1)+" / "+Integer.toString(solutions.size()));
+                }
+            }
+        );
+
         solutionPento = new PentoComponent(700,500);
+        solutionPento.emptyBoard();
+
+        solutionLabel = new JLabel("");
 
         solutionFrame.add(solutionPento, "cell 0 0 7 1, w 700!, h 500!, gapleft 30");
         solutionFrame.add(nextSolutionButton, "cell 0 1, gapleft 30");
+        solutionFrame.add(solutionLabel, "cell 1 1");
  
         mainFrame.setVisible(true);
     }
