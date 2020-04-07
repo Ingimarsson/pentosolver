@@ -2,8 +2,7 @@
 
 This is a graphical program to find solutions to [pentomino](https://en.wikipedia.org/wiki/Pentomino) puzzles.
 
-![Pento Editor](pentoeditor.png)
-![Pento Solver](pentosolver.png)
+![Pento Editor](pentoeditor.png) ![Pento Solver](pentosolver.png)
 
 ## Instructions
 
@@ -29,3 +28,6 @@ This project uses Maven for build management. A jar file can be compiled and pac
 
     mvn assembly:assembly
 
+## Credits
+
+This program uses the Pento class written by Snorri Agnarsson.

@@ -115,7 +115,7 @@ public class App {
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URL("https://google.com").toURI());
+                    Desktop.getDesktop().browse(new URL("https://github.com/Ingimarsson/pentosolver#instructions").toURI());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
