@@ -2,7 +2,9 @@
 
 This is a graphical program to find solutions to [pentomino](https://en.wikipedia.org/wiki/Pentomino) puzzles.
 
-![Pento Editor](pentoeditor.png) ![Pento Solver](pentosolver.png)
+| Editor | Solution |
+|-|-|
+| ![Pento Editor](pentoeditor.png)  | ![Pento Solver](pentosolver.png) |
 
 ## Instructions
 
