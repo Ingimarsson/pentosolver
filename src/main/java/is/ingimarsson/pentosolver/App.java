@@ -1,6 +1,7 @@
 package is.ingimarsson.pentosolver;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -142,6 +143,9 @@ public class App {
     public App() {
         String[] board = new String[]{"        ", "        ", "        ", "   **   ", "   **   ", "        ", "        ", "        "};
         jfc = new JFileChooser();
+        jfc.addChoosableFileFilter(new FileNameExtensionFilter("Pento Files", "pento"));
+        jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        jfc.setAcceptAllFileFilterUsed(true);
 
         mainFrame = new JFrame("Pento Editor");
         solutionFrame = new JFrame("Pento Solver");
